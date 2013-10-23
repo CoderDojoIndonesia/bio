@@ -8,8 +8,7 @@ setup(name='Bio',
       url='http://www.python.org/sigs/distutils-sig/',
       install_requires=
       [
-        'Flask==0.10.1', 
-        'MarkupSafe',
+        'Flask==0.10.1',
         'Flask-SQLAlchemy==1.0',
         'Flask-Login==0.2.7',
         'Flask-WTF==0.9.2'
