@@ -2,14 +2,14 @@
 {% block content %}
 
 <div class="page-header">
-    <h1>Eko Suprapto Wibowo</h1>
-    <p>A cool coder and an even cooler Capoeirista!</p>
+    <h1>{{ user.firstname }} {{ user.lastname }}</h1>
+    <p>{{ user.tagline }}</p>
 </div>
 <div class="row">
     <div class="col-sm-4">
         <div class="starter-template">
-          <img src="/static/avatar.png">
-          <div align="justify">I am a highly enthusiast coder with a whole set of passions for many programming languages and technologies. You will thrilled as I construct solution using technology coming from different domain expertise. For some users, it will be like tumbling down the rabbit hole... <img src="/static/smiley-cool.gif"/></div>
+          <img src="{{ user.avatar }}">
+          <div align="justify">{{ user.bio }}</div>
       </div>
 
     </div>
