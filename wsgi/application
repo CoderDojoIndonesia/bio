@@ -10,3 +10,7 @@ except IOError:
     pass
 
 from main import application
+db.drop_all()
+db.create_all()
+db.session.add(Users(username='ekowibowo', firstname='Eko', lastname='Suprapto Wibowo', password='rahasia', email='swdev.bali@gmail.com', tagline='A cool coder and an even cooler Capoeirista', bio = 'Amazingly created creature', avatar = '/static/avatar.png'))
+db.session.commit()
