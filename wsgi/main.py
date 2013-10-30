@@ -16,6 +16,7 @@ class Users(db.Model,object):
     password = db.Column(db.String)
     email = db.Column(db.String(100), unique=True)
 
+    time_registered = db.Column(db.DateTime)
     tagline = db.Column(db.String(255))
     bio = db.Column(db.Text)
     avatar = db.Column(db.String(255))
