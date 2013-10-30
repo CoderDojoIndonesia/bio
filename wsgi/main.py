@@ -8,7 +8,7 @@ application.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('OPENSHIFT_POSTGR
 
 db = SQLAlchemy(application) 
 
-class Users(db.Model,object):
+class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(60), unique=True)
     firstname = db.Column(db.String(20))
