@@ -37,16 +37,16 @@ class Users(db.Model):
         self.avatar = avatar
 
 class SignupForm(Form):
-    email = TextField('Email', validators=[
+    email = TextField('Email address', validators=[
             Required(),
             validators.Length(min=6, message=(u'Little short for an email address?')),
             validators.Email(message=(u'That\'s not a valid email address.'))
             ])
-    password = PasswordField('Password', validators=[
+    password = PasswordField('Pick a secure password', validators=[
             Required(),
-            validators.Length(min=6, message=(u'Please give a longer password'))
-           
+            validators.Length(min=6, message=(u'Please give a longer password'))           
             ])
+    username = TextField('Choose your username', validators=[Required()])
     agree = BooleanField('I agree all your <a href="/static/tos.html">Terms of Services</a>', validators=[Required()])
 
 @application.route('/')
@@ -76,7 +76,7 @@ def signup():
             return "valid!"
         else:
             print "not valid"
-            return render_template('signup.html', form = SignupForm(), page_title = 'Signup to Bio Application')
+            return render_template('signup.html', form = form, page_title = 'Signup to Bio Application')
     return render_template('signup.html', form = SignupForm(), page_title = 'Signup to Bio Application')
 
 
