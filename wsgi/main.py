@@ -1,10 +1,15 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+from flask.ext.wtf import Form
+from wtforms import TextField, PasswordField, validators, HiddenField, TextAreaField, BooleanField
+from wtforms.validators import Required, EqualTo, Optional
 import os
 
 application = Flask(__name__)
 
 application.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('OPENSHIFT_POSTGRESQL_DB_URL') if os.environ.get('OPENSHIFT_POSTGRESQL_DB_URL') else 'postgresql://localhost:5432/bio'
+application.config['CSRF_ENABLED'] = True
+application.config['SECRET_KEY'] = 'rahasiabesar'
 
 db = SQLAlchemy(application) 
 
@@ -31,11 +36,24 @@ class Users(db.Model):
         self.bio = bio
         self.avatar = avatar
 
+class SignupForm(Form):
+    email = TextField('Email', validators=[
+            Required(),
+            validators.Length(min=6, message=(u'Little short for an email address?')),
+            validators.Email(message=(u'That\'s not a valid email address.'))
+            ])
+    password = PasswordField('Password', validators=[
+            Required(),
+            validators.Length(min=6, message=(u'Please give a longer password'))
+           
+            ])
+    agree = BooleanField('I agree all your <a href="/static/tos.html">Terms of Services</a>', validators=[Required()])
+
 @application.route('/')
 @application.route('/<username>')
 def index(username = None):
     if username is None:
-        return render_template('themes/water/index.html', page_title = 'Biography just for you!')
+        return render_template('index.html', page_title = 'Biography just for you!')
     
     user = Users.query.filter_by(username=username).first()
     if user is None:
@@ -48,6 +66,19 @@ def index(username = None):
         user.avatar = '/static/batman.jpeg'
         return render_template('themes/water/bio.html', page_title = 'Claim this name : ' + username, user = user)
     return render_template('themes/water/bio.html', page_title = user.firstname + ' ' + user.lastname, user = user)
+
+@application.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        form = SignupForm(request.form)
+        if form.validate():
+            print "valid"
+            return "valid!"
+        else:
+            print "not valid"
+            return render_template('signup.html', form = SignupForm(), page_title = 'Signup to Bio Application')
+    return render_template('signup.html', form = SignupForm(), page_title = 'Signup to Bio Application')
+
 
 def dbinit():
     db.drop_all()

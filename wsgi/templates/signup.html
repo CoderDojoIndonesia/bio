@@ -1,0 +1,39 @@
+{% extends "base-layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-6">
+        Image banner
+    </div>
+    <div class="col-sm-6"> 
+        <form class="form-horizontal" action={{url_for('signup')}} method="POST" >
+            {{ form.hidden_tag() }}
+            <div class="heading">
+                <h4 class="form-heading">Sign Up</h4>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="email">{{form.email.label}}</label>
+                <div class="controls">
+                                        {{form.email(placeholder="E.g. ashwinh@cybage.com")}}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="password">{{form.password.label}}</label>
+                <div class="controls">
+                                        {{form.password(placeholder="Min. 6 Characters")}}
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    
+                    <label class="checkbox">
+                                        {{form.agree}} {{form.agree.label}}
+                    </label>
+                    <button type="submit" class="btn btn-success">Sign Up</button>
+                </div>
+            </div>
+        </form>
+    </div>                            
+</div>
+
+{% endblock %}
