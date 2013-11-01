@@ -72,10 +72,8 @@ def signup():
     if request.method == 'POST':
         form = SignupForm(request.form)
         if form.validate():
-            print "valid"
-            return "valid!"
+            pass
         else:
-            print "not valid"
             return render_template('signup.html', form = form, page_title = 'Signup to Bio Application')
     return render_template('signup.html', form = SignupForm(), page_title = 'Signup to Bio Application')
 
