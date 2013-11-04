@@ -7,39 +7,48 @@
     <div class="col-sm-3">
 
     </div>
-    <div class="col-sm-6 well"> 
+    <div class="col-sm-6 well" style="background-color: rgb(255,255,255);">
         <div class="container">
             <div class="row">
                 <div class="col-sm-2">
                 </div>
                 <div class="col-sm-8">
                     
-                    <form class="form-horizontal" action={{url_for('signup')}} method="POST" role="form" >
+                    <form role="form" class="form-horizontal" action={{url_for('signup')}} method="POST" >
                            {{ form.hidden_tag() }}
                         <div class="heading">
                             <h4 class="form-heading">Publish your biography to the world!</h4>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label" for="email">{{form.email.label}}</label>
-                                {{ form.email(placeholder="E.g. brucewayne@wayne.com", class="form-control") }} {{ form.email.errors[0] }}
+                            <label for="email" class="col-sm-5">{{form.email.label}}</label>
+                            <div class="col-sm-7">
+                                {{ form.email(placeholder="E.g. brucewayne@wayne.com", class="form-control") }} 
+                                {{ form.email.errors[0] }}
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label" for="password">{{form.password.label}}</label>
+                            <label for="password" class="col-sm-5">{{form.password.label}}</label>
+                            <div class="col-sm-7">
                                {{ form.password(placeholder="Min. 6 Characters", class="form-control") }}
-                            <span class="help-inline">{{ form.password.errors[0] }}</span>
+                                <span class="help-inline">{{ form.password.errors[0] }}</span>
+                            </div>
+
                         </div>
                         <div class="form-group">
-                            <label class="control-label" for="username">{{form.username.label}}</label>              
+                            <label for="username" class="col-sm-5">{{form.username.label}}</label>              
+                            <div class="col-sm-7">
                                 {{form.username(placeholder="E.g. ashwinhegde", class="form-control")}}
                             <span class="help-inline">{{ form.username.errors[0] }}</span>                
+                            </div>
                         </div>
                         <div class="form-group">                    
-                            <label class="checkbox">
+                            <label class="checkbox col-sm-12">
                                {{form.agree}} {{form.agree.label}}  {{ form.agree.errors[0] }}
                             </label>
-                            <button type="submit" class="btn btn-success">Sign Up</button>
+
                         </div>
+                        <button type="submit" class="btn btn-success">Sign Up</button>
                     </form>
                 </div>
                 <div class="col-sm-2">
