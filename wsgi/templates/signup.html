@@ -10,11 +10,10 @@
     <div class="col-sm-6 well" style="background-color: rgb(255,255,255);">
         <div class="container">
             <div class="row">
-                <div class="col-sm-2">
+                <div class="col-sm-1">
                 </div>
-                <div class="col-sm-8">
-                    
-                    <form role="form" class="form-horizontal" action={{url_for('signup')}} method="POST" >
+                <div class="col-sm-10>
+                    <form class="form-horizontal" action={{url_for('signup')}} method="POST" role="form">
                            {{ form.hidden_tag() }}
                         <div class="heading">
                             <h4 class="form-heading">Publish your biography to the world!</h4>
@@ -51,7 +50,7 @@
                         <button type="submit" class="btn btn-success">Sign Up</button>
                     </form>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-1">
                 </div>
             </div>
         </div><!--/container-->
