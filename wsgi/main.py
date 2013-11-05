@@ -38,8 +38,8 @@ class Users(db.Model):
 
 class SignupForm(Form):
     email = TextField('Email address', validators=[
-            Required(),
-            validators.Length(min=6, message=(u'Little short for an email address?')),
+            Required('Please provide a valid email address'),
+            validators.Length(min=6, message=(u'Email address too short')),
             validators.Email(message=(u'That\'s not a valid email address.'))
             ])
     password = PasswordField('Pick a secure password', validators=[
@@ -47,7 +47,7 @@ class SignupForm(Form):
             validators.Length(min=6, message=(u'Please give a longer password'))           
             ])
     username = TextField('Choose your username', validators=[Required()])
-    agree = BooleanField('I agree all your <a href="/static/tos.html">Terms of Services</a>', validators=[Required()])
+    agree = BooleanField('I agree all your <a href="/static/tos.html">Terms of Services</a>', validators=[Required(u'You must accept our Terms of Service')])
 
 @application.route('/')
 @application.route('/<username>')
