@@ -104,6 +104,9 @@ def signup():
             return render_template('signup.html', form = form, page_title = 'Signup to Bio Application')
     return render_template('signup.html', form = SignupForm(), page_title = 'Signup to Bio Application')
 
+@application.route('/signin', methods=['POST'])
+def signin():
+    return "OKAY"
 
 def dbinit():
     db.drop_all()
