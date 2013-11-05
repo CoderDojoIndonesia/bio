@@ -72,7 +72,34 @@ def signup():
     if request.method == 'POST':
         form = SignupForm(request.form)
         if form.validate():
-            pass
+            user = Users()
+            form.populate_obj(user)
+            
+            user_exist = Users.query.filter_by(username=form.username.data).first()
+            email_exist = Users.query.filter_by(email=form.email.data).first()
+
+            if user_exist:
+                form.username.errors.append('Username already taken')
+
+            if email_exist:
+                form.email.errors.append('Email already use')
+
+            if user_exist or email_exist:
+                return render_template('signup.html', 
+                                       form = form,
+                                       page_title = 'Signup to Bio Application')
+            
+            else:
+                user.firstname = "Firstname"
+                user.lastname = "Lastname"
+                user.tagline = "Tagline of how special you are"
+                user.bio = "Explain to the rest of the world why you are the very most unique person to have a look at"
+                user.avatar = '/static/batman.jpeg'
+
+                db.session.add(user)
+                db.session.commit()
+                return render_template('signup-success.html', user = user, page_title = 'Sign Up Success!')
+
         else:
             return render_template('signup.html', form = form, page_title = 'Signup to Bio Application')
     return render_template('signup.html', form = SignupForm(), page_title = 'Signup to Bio Application')
