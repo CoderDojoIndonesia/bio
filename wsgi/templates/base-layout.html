@@ -28,15 +28,25 @@
             <a class="navbar-brand" href="/">Biography</a>
         </div>
         <div class="collapse navbar-collapse">
-          <form class="navbar-form navbar-right" action="{{ url_for('signin')}}" method="POST">
-              <div class="form-group">
-                  <input type="text" class="form-control" placeholder="Username">
-              </div>
-              <div class="form-group">
-                  <input type="password" class="form-control" placeholder="Password">
-              </div>
-              <button type="submit" class="btn btn-default">Sign In</button>
-          </form>
+            {% if session['signed'] %}
+            {{ session['username'] }}
+            <a href="{{ url_for('signout') }}">Logout</a>
+
+            {% else %}            
+
+            <form class="navbar-form navbar-right" action="{{ url_for('signin')}}" method="POST">
+              {{ signin_form.hidden_tag() }}
+                <div class="form-group">
+                  {{ signin_form.username(class="form-control", placeholder="Username") }}
+                </div>
+                <div class="form-group">
+                  {{ signin_form.password(class="form-control", placeholder="Password") }}
+                </div>
+                <button type="submit" class="btn btn-default">Sign In</button>
+            </form>
+
+            {% endif %}
+
         </div><!--/.nav-collapse -->
     </div>
 

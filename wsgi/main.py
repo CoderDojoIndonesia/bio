@@ -1,8 +1,12 @@
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+
 from flask.ext.wtf import Form
 from wtforms import TextField, PasswordField, validators, HiddenField, TextAreaField, BooleanField
 from wtforms.validators import Required, EqualTo, Optional, Length, Email
+
+from flask.ext.login import LoginManager, login_user, logout_user, current_user, login_required
+from flask import redirect, url_for, session
 import os
 
 application = Flask(__name__)
@@ -12,6 +16,14 @@ application.config['CSRF_ENABLED'] = True
 application.config['SECRET_KEY'] = 'rahasiabesar'
 
 db = SQLAlchemy(application) 
+
+login_manager = LoginManager()
+login_manager.init_app(application)
+login_manager.login_view = '/signin'
+@login_manager.user_loader
+def load_user(id):
+    return Users.query.get(id)
+
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,7 +38,9 @@ class Users(db.Model):
     bio = db.Column(db.Text)
     avatar = db.Column(db.String(255))
 
-    def __init__(self, username = None, password = None, email = None, firstname = None, lastname = None, tagline = None, bio = None, avatar = None):
+    active = db.Column(db.Boolean)
+
+    def __init__(self, username = None, password = None, email = None, firstname = None, lastname = None, tagline = None, bio = None, avatar = None, active = None):
         self.username = username
         self.email = email
         self.firstname = firstname
@@ -35,6 +49,19 @@ class Users(db.Model):
         self.tagline = tagline
         self.bio = bio
         self.avatar = avatar
+        self.active = active
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return self.active
+    
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return unicode(self.id)
 
 class SignupForm(Form):
     email = TextField('Email address', validators=[
@@ -49,11 +76,22 @@ class SignupForm(Form):
     username = TextField('Choose your username', validators=[Required()])
     agree = BooleanField('I agree all your <a href="/static/tos.html">Terms of Services</a>', validators=[Required(u'You must accept our Terms of Service')])
 
+class SigninForm(Form):
+    username = TextField('Username', validators=[
+            Required(),
+            validators.Length(min=3, message=(u'Your username must be a minimum of 3'))
+            ])
+    password = PasswordField('Password', validators=[
+            Required(),
+            validators.Length(min=6, message=(u'Please give a longer password'))
+            ])
+    remember_me = BooleanField('Remember me', default = False)
+
 @application.route('/')
 @application.route('/<username>')
 def index(username = None):
     if username is None:
-        return render_template('index.html', page_title = 'Biography just for you!')
+        return render_template('index.html', page_title = 'Biography just for you!', signin_form = SigninForm())
     
     user = Users.query.filter_by(username=username).first()
     if user is None:
@@ -64,8 +102,8 @@ def index(username = None):
         user.tagline = 'Tagline of how special you are'
         user.bio = 'Explain to the rest of the world, why you are the very most unique person to look at'
         user.avatar = '/static/batman.jpeg'
-        return render_template('themes/water/bio.html', page_title = 'Claim this name : ' + username, user = user)
-    return render_template('themes/water/bio.html', page_title = user.firstname + ' ' + user.lastname, user = user)
+        return render_template('themes/water/bio.html', page_title = 'Claim this name : ' + username, user = user, signin_form = SigninForm())
+    return render_template('themes/water/bio.html', page_title = user.firstname + ' ' + user.lastname, user = user, signin_form = SigninForm())
 
 @application.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -106,7 +144,43 @@ def signup():
 
 @application.route('/signin', methods=['POST'])
 def signin():
-    return "OKAY"
+    print "signin"
+
+    if current_user is not None and current_user.is_authenticated():
+        return redirect(url_for('index'))
+    
+    print "cek login data"
+    form = SigninForm(request.form)
+    if form.validate():
+        user = Users.query.filter_by(username = form.username.data).first()
+        
+        print user
+        if user is None:
+            print "user not exist"
+            return redirect(url_for('signin_fullpage'))
+        if user.password != form.password.data:
+            print "password differ"
+            return redirect(url_for('signin_fullpage'))
+
+        login_user(user, remember = form.remember_me.data)            
+
+        session['signed'] = True
+        session['username']= user.username
+        print "signed!"
+        return redirect(url_for('index'))        
+    return redirect(url_for('signin_fullpage'))    
+
+@application.route('/signin')
+def signin_fullpage():
+    return "invalid yow"
+
+@application.route('/signout')
+def signout():
+    session.pop('signed')
+    session.pop('username')
+    logout_user()
+    return redirect(url_for('index'))
+
 
 def dbinit():
     db.drop_all()
@@ -116,7 +190,8 @@ def dbinit():
                          email='swdev.bali@gmail.com', 
                          tagline='A cool coder and an even cooler Capoeirista', 
                          bio = 'I love Python very much!', 
-                         avatar = '/static/avatar.png'))
+                         avatar = '/static/avatar.png',
+                         active = True))
     db.session.commit()
 
 if __name__ == '__main__':
