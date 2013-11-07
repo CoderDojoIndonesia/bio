@@ -29,10 +29,21 @@
         </div>
         <div class="collapse navbar-collapse">
             {% if session['signed'] %}
-            {{ session['username'] }}
-            <a href="{{ url_for('signout') }}">Logout</a>
-
+            <ul class="nav navbar-nav navbar-right" >
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        Signed in as {{ session['username'] }} <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ url_for('signout') }}">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
             {% else %}            
+            
+            {% if not signinpage_form %}
 
             <form class="navbar-form navbar-right" action="{{ url_for('signin')}}" method="POST">
               {{ signin_form.hidden_tag() }}
@@ -42,8 +53,15 @@
                 <div class="form-group">
                   {{ signin_form.password(class="form-control", placeholder="Password") }}
                 </div>
+                <div class="checkbox navbar-text">
+                    {{ signin_form.remember_me }} 
+                    {{ signin_form.remember_me.label }}
+                </div>
+
                 <button type="submit" class="btn btn-default">Sign In</button>
             </form>
+            
+            {% endif %}
 
             {% endif %}
 

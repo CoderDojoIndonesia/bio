@@ -142,37 +142,39 @@ def signup():
             return render_template('signup.html', form = form, page_title = 'Signup to Bio Application')
     return render_template('signup.html', form = SignupForm(), page_title = 'Signup to Bio Application')
 
-@application.route('/signin', methods=['POST'])
+@application.route('/signin', methods=['GET', 'POST'])
 def signin():
-    print "signin"
-
-    if current_user is not None and current_user.is_authenticated():
-        return redirect(url_for('index'))
+    if request.method=='POST':
+        if current_user is not None and current_user.is_authenticated():
+            return redirect(url_for('index'))
     
-    print "cek login data"
-    form = SigninForm(request.form)
-    if form.validate():
-        user = Users.query.filter_by(username = form.username.data).first()
-        
-        print user
-        if user is None:
-            print "user not exist"
-            return redirect(url_for('signin_fullpage'))
-        if user.password != form.password.data:
-            print "password differ"
-            return redirect(url_for('signin_fullpage'))
+        form = SigninForm(request.form)
+        if form.validate():
+            user = Users.query.filter_by(username = form.username.data).first()
+            
+            if user is None:
+                form.username.errors.append('Username not found')
+                return render_template('signinpage.html',  signinpage_form = form)
+            if user.password != form.password.data:
+                form.password.errors.append('Passwod did not match')
+                return render_template('signinpage.html',  signinpage_form = form)
 
-        login_user(user, remember = form.remember_me.data)            
+            login_user(user, remember = form.remember_me.data)            
 
-        session['signed'] = True
-        session['username']= user.username
-        print "signed!"
-        return redirect(url_for('index'))        
-    return redirect(url_for('signin_fullpage'))    
+            session['signed'] = True
+            session['username']= user.username
 
-@application.route('/signin')
-def signin_fullpage():
-    return "invalid yow"
+            if session.get('next'):                
+                next_page = session.get('next') 
+                session.pop('next')
+                return redirect(next_page) 
+            else:
+                return redirect(url_for('index'))
+        return render_template('signinpage.html',  signinpage_form = form)
+    else:
+        session['next'] = request.args.get('next')
+        return render_template('signinpage.html', signinpage_form = SigninForm())        
+
 
 @application.route('/signout')
 def signout():
@@ -181,6 +183,10 @@ def signout():
     logout_user()
     return redirect(url_for('index'))
 
+@application.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html')
 
 def dbinit():
     db.drop_all()
