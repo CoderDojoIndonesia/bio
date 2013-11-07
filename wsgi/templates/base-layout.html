@@ -23,19 +23,29 @@
   </head>
 
   <body>
+      <!--
+      <style type="text/css">
+          .navbar{
+              background-color:#2e2e2e;
+          }
+      </style>
+-->
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="navbar-header">
-            <a class="navbar-brand" href="/">Biography</a>
+            <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-bold">iography</span></a>
         </div>
         <div class="collapse navbar-collapse">
             {% if session['signed'] %}
             <ul class="nav navbar-nav navbar-right" >
-                <li class="dropdown">
+                <li class="dropdown">                    
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <span class="glyphicon glyphicon-user"></span>
                         Signed in as {{ session['username'] }} <b class="caret"></b>
                     </a>
+                    
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                        <li><a href="/{{session['username']}}">Your Bio Page</a></li>
+                        <li><a href="{{ url_for('profile') }}">Settings..</a></li>
                         <li class="divider"></li>
                         <li><a href="{{ url_for('signout') }}">Logout</a></li>
                     </ul>
@@ -46,19 +56,20 @@
             {% if not signinpage_form %}
 
             <form class="navbar-form navbar-right" action="{{ url_for('signin')}}" method="POST">
-              {{ signin_form.hidden_tag() }}
+              {{ signin_form.hidden_tag() }}                
                 <div class="form-group">
                   {{ signin_form.username(class="form-control", placeholder="Username") }}
                 </div>
                 <div class="form-group">
                   {{ signin_form.password(class="form-control", placeholder="Password") }}
                 </div>
-                <div class="checkbox navbar-text">
+                <div class="checkbox">
                     {{ signin_form.remember_me }} 
-                    {{ signin_form.remember_me.label }}
+                    {{ signin_form.remember_me.label(style="color:rgb(240,240,240);") }}
+                </div>                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-default">Sign In</button>
                 </div>
-
-                <button type="submit" class="btn btn-default">Sign In</button>
             </form>
             
             {% endif %}

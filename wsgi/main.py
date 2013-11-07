@@ -124,6 +124,7 @@ def signup():
 
             if user_exist or email_exist:
                 return render_template('signup.html', 
+                                       signin_form = SigninForm(),
                                        form = form,
                                        page_title = 'Signup to Bio Application')
             
@@ -140,7 +141,7 @@ def signup():
 
         else:
             return render_template('signup.html', form = form, page_title = 'Signup to Bio Application')
-    return render_template('signup.html', form = SignupForm(), page_title = 'Signup to Bio Application')
+    return render_template('signup.html', form = SignupForm(), signin_form = SigninForm(),page_title = 'Signup to Bio Application')
 
 @application.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -186,7 +187,7 @@ def signout():
 @application.route('/profile')
 @login_required
 def profile():
-    return render_template('profile.html')
+    return render_template('profile.html', page_title='Customize your profile')
 
 def dbinit():
     db.drop_all()
