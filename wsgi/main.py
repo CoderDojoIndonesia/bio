@@ -8,6 +8,7 @@ from wtforms.validators import Required, EqualTo, Optional, Length, Email
 from flask.ext.login import LoginManager, login_user, logout_user, current_user, login_required
 from flask import redirect, url_for, session
 import os
+import md5
 
 application = Flask(__name__)
 
@@ -23,6 +24,14 @@ login_manager.login_view = '/signin'
 @login_manager.user_loader
 def load_user(id):
     return Users.query.get(id)
+
+
+def hash_string(string):
+     """
+     Return the md5 hash of a (string+salt)
+     """
+     salted_hash = string + application.config['SECRET_KEY']
+     return md5.new(salted_hash).hexdigest()
 
 
 class Users(db.Model):
@@ -131,17 +140,27 @@ def signup():
             else:
                 user.firstname = "Firstname"
                 user.lastname = "Lastname"
+                user.password = hash_string(user.password)
                 user.tagline = "Tagline of how special you are"
                 user.bio = "Explain to the rest of the world why you are the very most unique person to have a look at"
                 user.avatar = '/static/batman.jpeg'
 
                 db.session.add(user)
                 db.session.commit()
-                return render_template('signup-success.html', user = user, page_title = 'Sign Up Success!')
+                return render_template('signup-success.html', 
+                                       user = user,
+                                       signin_form = SigninForm(),
+                                       page_title = 'Sign Up Success!')
 
         else:
-            return render_template('signup.html', form = form, page_title = 'Signup to Bio Application')
-    return render_template('signup.html', form = SignupForm(), signin_form = SigninForm(),page_title = 'Signup to Bio Application')
+            return render_template('signup.html', 
+                                   form = form, 
+                                   signin_form = SigninForm(),
+                                   page_title = 'Signup to Bio Application')
+    return render_template('signup.html', 
+                           form = SignupForm(), 
+                           signin_form = SigninForm(),
+                           page_title = 'Signup to Bio Application')
 
 @application.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -155,10 +174,10 @@ def signin():
             
             if user is None:
                 form.username.errors.append('Username not found')
-                return render_template('signinpage.html',  signinpage_form = form)
-            if user.password != form.password.data:
+                return render_template('signinpage.html',  signinpage_form = form, page_title = 'Sign In to Bio Application')
+            if user.password != hash_string(form.password.data):
                 form.password.errors.append('Passwod did not match')
-                return render_template('signinpage.html',  signinpage_form = form)
+                return render_template('signinpage.html',  signinpage_form = form, page_title = 'Sign In to Bio Application')
 
             login_user(user, remember = form.remember_me.data)            
 
@@ -171,7 +190,7 @@ def signin():
                 return redirect(next_page) 
             else:
                 return redirect(url_for('index'))
-        return render_template('signinpage.html',  signinpage_form = form)
+        return render_template('signinpage.html',  signinpage_form = form, page_title = 'Sign In to Bio Application')
     else:
         session['next'] = request.args.get('next')
         return render_template('signinpage.html', signinpage_form = SigninForm())        
@@ -193,7 +212,7 @@ def dbinit():
     db.drop_all()
     db.create_all()
     db.session.add(Users(username='ekowibowo', firstname='Eko', 
-                         lastname='Suprapto Wibowo', password='rahasia',
+                         lastname='Suprapto Wibowo', password=hash_string('rahasia'),
                          email='swdev.bali@gmail.com', 
                          tagline='A cool coder and an even cooler Capoeirista', 
                          bio = 'I love Python very much!', 
