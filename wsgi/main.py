@@ -48,6 +48,8 @@ class Users(db.Model):
     avatar = db.Column(db.String(255))
 
     active = db.Column(db.Boolean)
+    
+    portofolio = db.relationship('Portofolio', lazy='dynamic')
 
     def __init__(self, username = None, password = None, email = None, firstname = None, lastname = None, tagline = None, bio = None, avatar = None, active = None):
         self.username = username
@@ -71,6 +73,19 @@ class Users(db.Model):
 
     def get_id(self):
         return unicode(self.id)
+
+class Portofolio(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(60), unique=True)
+    description = db.Column(db.Text)
+    tags = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __init__(self, title = None, description = None, tags = None):
+        self.title = title
+        self.description = description
+        self.tags = tags
+
 
 class SignupForm(Form):
     email = TextField('Email address', validators=[
@@ -96,6 +111,21 @@ class SigninForm(Form):
             ])
     remember_me = BooleanField('Remember me', default = False)
 
+
+class PortoForm(Form):
+    title = TextField('Title', validators=[
+            Required(),
+            validators.Length(min=3, message=(u'Title must be longer'))
+            ])
+    description = TextField('Description', validators=[
+            Required(),
+            validators.Length(min=10, message=(u'A litle longer please'))
+            ])
+    tags = TextField('Tags', validators=[
+            Required(),
+            validators.Length(min=3, message=(u'A litle longer please'))
+            ])
+
 @application.route('/')
 @application.route('/<username>')
 def index(username = None):
@@ -111,8 +141,9 @@ def index(username = None):
         user.tagline = 'Tagline of how special you are'
         user.bio = 'Explain to the rest of the world, why you are the very most unique person to look at'
         user.avatar = '/static/batman.jpeg'
-        return render_template('themes/water/bio.html', page_title = 'Claim this name : ' + username, user = user, signin_form = SigninForm())
-    return render_template('themes/water/bio.html', page_title = user.firstname + ' ' + user.lastname, user = user, signin_form = SigninForm())
+        return render_template('themes/water/bio.html', page_title = 'Claim this name : ' + username, user = user, signin_form = SigninForm(), portoform = PortoForm())
+    else:
+        return render_template('themes/water/bio.html', page_title = user.firstname + ' ' + user.lastname, user = user, signin_form = SigninForm(), portoform = PortoForm())
 
 @application.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -211,13 +242,23 @@ def profile():
 def dbinit():
     db.drop_all()
     db.create_all()
-    db.session.add(Users(username='ekowibowo', firstname='Eko', 
+    user = Users(username='ekowibowo', firstname='Eko', 
                          lastname='Suprapto Wibowo', password=hash_string('rahasia'),
                          email='swdev.bali@gmail.com', 
                          tagline='A cool coder and an even cooler Capoeirista', 
                          bio = 'I love Python very much!', 
                          avatar = '/static/avatar.png',
-                         active = True))
+                         active = True)
+    user.portofolio.append(Portofolio(title = 'FikrPOS',
+                                      description = 'An integrated POS solution using cloud concept', 
+                                      tags='python,c#,openshift,flask,sqlalchemy,postgresql,bootstrap3'))
+    user.portofolio.append(Portofolio(title = 'Bio Application',
+                                      description = 'An autobiography publisher', 
+                                      tags='python,openshift,flask,sqlalchemy,postgresql,bootstrap3'))
+    user.portofolio.append(Portofolio(title = 'Project Management',
+                                      description = 'Internal company project management tool', 
+                                      tags='extjs,python,openshift,flask,sqlalchemy,postgresql,bootstrap3'))
+    db.session.add(user)
     db.session.commit()
 
 if __name__ == '__main__':
