@@ -49,7 +49,7 @@ class Users(db.Model):
 
     active = db.Column(db.Boolean)
     
-    portofolio = db.relationship('Portofolio', lazy='dynamic')
+    portfolio = db.relationship('Portfolio', lazy='dynamic')
 
     def __init__(self, username = None, password = None, email = None, firstname = None, lastname = None, tagline = None, bio = None, avatar = None, active = None):
         self.username = username
@@ -74,7 +74,7 @@ class Users(db.Model):
     def get_id(self):
         return unicode(self.id)
 
-class Portofolio(db.Model):
+class Portfolio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(60), unique=True)
     description = db.Column(db.Text)
@@ -196,13 +196,16 @@ def signup():
 @application.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method=='POST':
+        print "a"
         if current_user is not None and current_user.is_authenticated():
+            print "q"
             return redirect(url_for('index'))
     
         form = SigninForm(request.form)
         if form.validate():
+            print "b"
             user = Users.query.filter_by(username = form.username.data).first()
-            
+            print "x"
             if user is None:
                 form.username.errors.append('Username not found')
                 return render_template('signinpage.html',  signinpage_form = form, page_title = 'Sign In to Bio Application')
@@ -224,6 +227,7 @@ def signin():
         return render_template('signinpage.html',  signinpage_form = form, page_title = 'Sign In to Bio Application')
     else:
         session['next'] = request.args.get('next')
+        print "c"
         return render_template('signinpage.html', signinpage_form = SigninForm())        
 
 
@@ -249,15 +253,15 @@ def dbinit():
                          bio = 'I love Python very much!', 
                          avatar = '/static/avatar.png',
                          active = True)
-    user.portofolio.append(Portofolio(title = 'FikrPOS',
-                                      description = 'An integrated POS solution using cloud concept', 
-                                      tags='python,c#,openshift,flask,sqlalchemy,postgresql,bootstrap3'))
-    user.portofolio.append(Portofolio(title = 'Bio Application',
-                                      description = 'An autobiography publisher', 
-                                      tags='python,openshift,flask,sqlalchemy,postgresql,bootstrap3'))
-    user.portofolio.append(Portofolio(title = 'Project Management',
-                                      description = 'Internal company project management tool', 
-                                      tags='extjs,python,openshift,flask,sqlalchemy,postgresql,bootstrap3'))
+    user.portfolio.append(Portfolio(title = 'FikrPOS',
+                                    description = 'An integrated POS solution using cloud concept', 
+                                    tags='python,c#,openshift,flask,sqlalchemy,postgresql,bootstrap3'))
+    user.portfolio.append(Portfolio(title = 'Bio Application',
+                                    description = 'An autobiography publisher', 
+                                    tags='python,openshift,flask,sqlalchemy,postgresql,bootstrap3'))
+    user.portfolio.append(Portfolio(title = 'Project Management',
+                                    description = 'Internal company project management tool', 
+                                    tags='extjs,python,openshift,flask,sqlalchemy,postgresql,bootstrap3'))
     db.session.add(user)
     db.session.commit()
 
