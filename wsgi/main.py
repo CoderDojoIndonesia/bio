@@ -196,16 +196,12 @@ def signup():
 @application.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method=='POST':
-        print "a"
         if current_user is not None and current_user.is_authenticated():
-            print "q"
             return redirect(url_for('index'))
     
         form = SigninForm(request.form)
         if form.validate():
-            print "b"
             user = Users.query.filter_by(username = form.username.data).first()
-            print "x"
             if user is None:
                 form.username.errors.append('Username not found')
                 return render_template('signinpage.html',  signinpage_form = form, page_title = 'Sign In to Bio Application')
@@ -227,15 +223,15 @@ def signin():
         return render_template('signinpage.html',  signinpage_form = form, page_title = 'Sign In to Bio Application')
     else:
         session['next'] = request.args.get('next')
-        print "c"
         return render_template('signinpage.html', signinpage_form = SigninForm())        
 
 
 @application.route('/signout')
+@login_required
 def signout():
+    logout_user()
     session.pop('signed')
     session.pop('username')
-    logout_user()
     return redirect(url_for('index'))
 
 @application.route('/profile')
