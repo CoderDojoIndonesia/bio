@@ -33,10 +33,26 @@
       <div class="container">
           <ul class="list-group">
               {% for porto in user.portfolio %}
-              <li class="list-group-item"><a href="#"><span class="glyphicon glyphicon-edit"></span></a> <a href="#"><span class="glyphicon glyphicon-remove"></span></a> {{ porto.title }} 
+              <li class="list-group-item">
+              <div class="container">
+                  <div class="row">
+                      <div class="col-sm-5">
+                          <a href="#"><span class="glyphicon glyphicon-edit"></span></a> <a href="#"><span class="glyphicon glyphicon-remove"></span></a>
+                          <strong>
+                              {{ porto.title }}
+                          </strong>
+                          <p> 
+                              {{ porto.description}}
+                          </p>
+                      </div>
+                      <div class="col-sm-7">
                 {% for tag in porto.tags.split(',') %}
-                  <span class="badge badge-important">{{ tag }}</span>
+                  <span class="badge badge-important pull-right">{{ tag }}</span>
                 {% endfor %}
+                      </div>
+                  </div>
+              </div>
+
               </li>
             {% endfor %}
           </ul>
