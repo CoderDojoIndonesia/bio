@@ -49,7 +49,7 @@ class Users(db.Model):
 
     active = db.Column(db.Boolean)
     
-    portfolio = db.relationship('Portfolio', lazy='dynamic')
+    portfolio = db.relationship('Portfolio')
 
     def __init__(self, username = None, password = None, email = None, firstname = None, lastname = None, tagline = None, bio = None, avatar = None, active = None):
         self.username = username
