@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{% if user_tagline != None %} {{ user.tagline }} {% endif %}">
+    <meta name="description" content="{% if user is defined %} {{ user.tagline }} {% endif %}">
     <meta name="author" content="">
     <link rel="shortcut icon" href="/static/assets/ico/favicon.png">
 

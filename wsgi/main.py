@@ -141,7 +141,7 @@ def index(username = None):
         user.tagline = 'Tagline of how special you are'
         user.bio = 'Explain to the rest of the world, why you are the very most unique person to look at'
         user.avatar = '/static/batman.jpeg'
-        return render_template('themes/water/bio.html', page_title = 'Claim this name : ' + username, user = user, signin_form = SigninForm(), portoform = PortoForm(), user_tagline = user.tagline)
+        return render_template('themes/water/bio.html', page_title = 'Claim this name : ' + username, user = user, signin_form = SigninForm(), portoform = PortoForm())
     else:
         return render_template('themes/water/bio.html', page_title = user.firstname + ' ' + user.lastname, user = user, signin_form = SigninForm(), portoform = PortoForm())
 
