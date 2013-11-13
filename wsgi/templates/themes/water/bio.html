@@ -119,13 +119,17 @@
     {
         $("#portfolio_id").val(id);
         $.getJSON(  
-            "{{ url_for('portfolio_get') }}",  
-            {id},
-            function(data) {  
-               alert(data);               
-            }  
-        );
-        $("#porto_form").modal('show');
+            "/portfolio_get/" + id,  
+            {}
+        ).done(function(data){
+            console.log('here?');
+            alert(data);    
+            $("#porto_form").modal('show');
+        }).fail(function(data,textstatus,xhr){
+            alert('fail = ' + data + ' header ' + xhr.getAllResponseHeaders());    
+        })
+        ;
+
     }
     $("#portform_btnsave").click(function(){
         $.post(  

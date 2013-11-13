@@ -10,6 +10,9 @@ from flask import redirect, url_for, session
 import os
 import md5
 import json
+from collections import OrderedDict
+from flask import jsonify
+from sqlalchemy.ext import serializer
 
 application = Flask(__name__)
 
@@ -76,9 +79,6 @@ class Users(db.Model, object):
         return unicode(self.id)
 
     def _asdict(self):
-        '''
-        Thanks to http://stackoverflow.com/questions/7102754/jsonify-a-sqlalchemy-result-set-in-flask
-        '''
         result = OrderedDict()
         for key in self.__mapper__.c.keys():
             result[key] = getattr(self, key)
@@ -272,9 +272,8 @@ def portfolio_add_update():
 
 @application.route('/portfolio_get/<id>')
 def portfolio_get(id):
-    user = Users.query.get(id)
-    print user.bio
-    return json.dumps(user)
+    user = Users.query.get(id)    
+    return serializer.dumps(user)
 
 
 def dbinit():
