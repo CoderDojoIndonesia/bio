@@ -37,7 +37,7 @@
               <div class="container">
                   <div class="row">
                       <div class="col-sm-5">
-                          <a href="#"><span class="glyphicon glyphicon-edit"></span></a> <a href="#"><span class="glyphicon glyphicon-remove"></span></a>
+                          <a href="javascript:editPortform('{{porto.id}}');"><span class="glyphicon glyphicon-edit"></span></a> <a href="#"><span class="glyphicon glyphicon-remove"></span></a>
                           <strong>
                               {{ porto.title }}
                           </strong>
@@ -73,21 +73,25 @@
                         <div class="col-sm-1">
                         </div>
                         <div class="col-sm-10">
-                            <form class="form-horizontal" action="" method="POST" >
+                            <form class="form-horizontal" action="" method="POST" id="portform">
+                                {{ portoform.portfolio_id }}
                     {{ portoform.hidden_tag() }}
                                 <div class="form-group">
                      {{ portoform.title.label }}
                     {{ portoform.title(class="form-control", placeholder="Give your project a clear and concise title")}}
+                                    <p class="help-block" id="error_title">{{ portoform.title.errors[0] }}</p>
                                 </div>
                                 
                                 <div class="form-group">
                      {{ portoform.description.label }}
-                    {{ portoform.description(class="form-control", placeholder="Describe your project as interesting as possible")}}                        
+                    {{ portoform.description(class="form-control", placeholder="Describe your project as interesting as possible")}}
+                                    <p class="help-block" id="error_description">{{ portoform.description.errors[0] }}</p>
                                 </div>
 
                                 <div class="form-group">
                      {{ portoform.tags.label }}
                     {{ portoform.tags(class="form-control", placeholder="What technology that you use? Separate it by comma")}}
+                                    <p class="help-block" id="error_tags">{{ portoform.tags.errors[0] }}</p>
                                 </div>
                             </form>
                         </div>
@@ -96,14 +100,59 @@
                     </div>
             </div>
             <div class="modal-footer">                                  
-                <button type="submit" class="btn btn-primary btn-success">Save</button>
+                <button type="submit" class="btn btn-primary btn-success" id="portform_btnsave">Save</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
 </div>
 
+{% endblock %}
+
+{% block footer %}
 <script>
+    $(document).ready(function(){
+       
+    });
     
+    function editPortform(id)
+    {
+        $("#portfolio_id").val(id);
+        $.getJSON(  
+            "{{ url_for('portfolio_get') }}",  
+            {id},
+            function(data) {  
+               alert(data);               
+            }  
+        );
+        $("#porto_form").modal('show');
+    }
+    $("#portform_btnsave").click(function(){
+        $.post(  
+            "{{ url_for('portfolio_add_update') }}",  
+            $("#portform").serialize(),  
+            function(data, textStatus) {
+                console.log(data)
+                var errors = $.parseJSON(data);
+    
+                $("#error_title").text("");
+                $("#error_description").text("");
+                $("#error_tags").text("");
+    
+                if(errors.iserror)
+                {       
+                    console.log('set');
+                    if(errors.title!=undefined) $("#error_title").text(errors.title[0]);
+                    if(errors.description!=undefined) $("#error_description").text(errors.description[0]);
+                    if(errors.tags!=undefined) $("#error_tags").text(errors.tags[0]);
+                }else if (errors.savedsuccess)
+                {
+                    $("#porto_form").modal('hide');
+                    location.reload();
+                }
+            }  
+        );
+    });
+
 </script>
 {% endblock %}

@@ -9,6 +9,7 @@ from flask.ext.login import LoginManager, login_user, logout_user, current_user,
 from flask import redirect, url_for, session
 import os
 import md5
+import json
 
 application = Flask(__name__)
 
@@ -34,7 +35,7 @@ def hash_string(string):
      return md5.new(salted_hash).hexdigest()
 
 
-class Users(db.Model):
+class Users(db.Model, object):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(60), unique=True)
     firstname = db.Column(db.String(20))
@@ -73,6 +74,15 @@ class Users(db.Model):
 
     def get_id(self):
         return unicode(self.id)
+
+    def _asdict(self):
+        '''
+        Thanks to http://stackoverflow.com/questions/7102754/jsonify-a-sqlalchemy-result-set-in-flask
+        '''
+        result = OrderedDict()
+        for key in self.__mapper__.c.keys():
+            result[key] = getattr(self, key)
+        return result
 
 class Portfolio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -113,17 +123,15 @@ class SigninForm(Form):
 
 
 class PortoForm(Form):
+    portfolio_id = HiddenField()
     title = TextField('Title', validators=[
-            Required(),
-            validators.Length(min=3, message=(u'Title must be longer'))
+            validators.Length(min=3, message=(u'Title must be longer, at least 3 characters'))
             ])
     description = TextField('Description', validators=[
-            Required(),
-            validators.Length(min=10, message=(u'A litle longer please'))
+            validators.Length(min=10, message=(u'Please give a longer description, at least 10 characters'))
             ])
     tags = TextField('Tags', validators=[
-            Required(),
-            validators.Length(min=3, message=(u'A litle longer please'))
+            validators.Length(min=2, message=(u'The tag at least having 2 characters length'))
             ])
 
 @application.route('/')
@@ -238,6 +246,36 @@ def signout():
 @login_required
 def profile():
     return render_template('profile.html', page_title='Customize your profile')
+
+@application.route('/portfolio_add_update', methods = ['POST'])
+@login_required #how to protect this in ajax called only for signed user?
+def portfolio_add_update():
+
+    form = PortoForm(request.form)
+    if form.validate():
+        result = {}
+        result['iserror'] = False
+
+        user = Users.query.filter_by(username = session['username']).first()
+        if user is not None:
+            user.portfolio.append(Portfolio(title = form.title.data, description = form.description.data, tags = form.tags.data))
+            db.session.commit();
+            result['savedsuccess'] = True 
+        else:
+            result['savedsuccess'] = False
+            
+        return json.dumps(result)
+
+    form.errors['iserror'] = True
+    print form.errors
+    return json.dumps(form.errors)
+
+@application.route('/portfolio_get/<id>')
+def portfolio_get(id):
+    user = Users.query.get(id)
+    print user.bio
+    return json.dumps(user)
+
 
 def dbinit():
     db.drop_all()
