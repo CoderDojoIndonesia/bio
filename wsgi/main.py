@@ -247,13 +247,20 @@ def portfolio_add_update():
         result = {}
         result['iserror'] = False
 
-        user = Users.query.filter_by(username = session['username']).first()
-        if user is not None:
-            user.portfolio.append(Portfolio(title = form.title.data, description = form.description.data, tags = form.tags.data))
-            db.session.commit();
-            result['savedsuccess'] = True 
+        if not form.portfolio_id.data:
+            user = Users.query.filter_by(username = session['username']).first()
+            if user is not None:
+                user.portfolio.append(Portfolio(title = form.title.data, description = form.description.data, tags = form.tags.data))
+                print 'id ', form.portfolio_id
+                db.session.commit()
+                result['savedsuccess'] = True 
+            else:
+                result['savedsuccess'] = False
         else:
-            result['savedsuccess'] = False
+            portfolio = Portfolio.query.get(form.portfolio_id.data)
+            form.populate_obj(portfolio)
+            db.session.commit()
+            result['savedsuccess'] = True
             
         return json.dumps(result)
 
@@ -262,9 +269,20 @@ def portfolio_add_update():
     return json.dumps(form.errors)
 
 @application.route('/portfolio_get/<id>')
+@login_required
 def portfolio_get(id):
     portfolio = Portfolio.query.get(id)
     return json.dumps(portfolio._asdict())
+
+@application.route('/portfolio_delete/<id>') 
+@login_required
+def portfolio_delete(id):
+    portfolio = Portfolio.query.get(id)
+    db.session.delete(portfolio)
+    db.session.commit()
+    result = {}
+    result['result'] = 'success';
+    return json.dumps(result)
 
 
 def dbinit():

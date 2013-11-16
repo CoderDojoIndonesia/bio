@@ -21,7 +21,7 @@
 
                 </div>
                 <form class="navbar-form navbar-right" role="search">
-                    <button class="btn btn-default btn-sm btn-success" data-toggle="modal" data-target="#porto_form">Add</button>
+                    <button class="btn btn-default btn-sm btn-success" id="portform_btnadd">Add</button>
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Search">
                     </div>
@@ -32,12 +32,17 @@
 
       <div class="container">
           <ul class="list-group">
+
+              {% if user.portfolio|length == 0 %}
+              Please add your awesome portfolio!
+              {% endif %}
+
               {% for porto in user.portfolio %}
               <li class="list-group-item">
               <div class="container">
                   <div class="row">
                       <div class="col-sm-5">
-                          <a href="javascript:editPortform('{{porto.id}}');"><span class="glyphicon glyphicon-edit"></span></a> <a href="#"><span class="glyphicon glyphicon-remove"></span></a>
+                          <a href="javascript:editPortform('{{porto.id}}');"><span class="glyphicon glyphicon-edit"></span></a> <a href="javascript:deletePortfolio('{{porto.id}}');"><span class="glyphicon glyphicon-remove"></span></a>
                           <strong>
                               {{ porto.title }}
                           </strong>
@@ -47,7 +52,7 @@
                       </div>
                       <div class="col-sm-7">
                 {% for tag in porto.tags.split(',') %}
-                  <span class="badge badge-important pull-right">{{ tag }}</span>
+                          <a href="#"><span class="badge badge-important pull-right">{{ tag }}</span></a>
                 {% endfor %}
                       </div>
                   </div>
@@ -111,9 +116,29 @@
 
 {% block footer %}
 <script>
+              
     $(document).ready(function(){
        
     });
+
+    function deletePortfolio(id)
+    {
+        bootbox.confirm("<strong>Portfolio deletion</strong><p>You can't undo this action. Are you sure?</p>", function(result){
+            if(result)
+            {
+                 $.getJSON(  
+                    "/portfolio_delete/" + id,  
+                    {}
+                ).done(function(data){
+                    alert(data.result);
+                    location.reload();
+                }).fail(function(data,textstatus,xhr){
+                    alert('fail = ' + data + ', textstatus ' + textstatus );    
+                })
+                ;
+            }
+        });
+    }
     
     function editPortform(id)
     {
@@ -134,6 +159,17 @@
         ;
 
     }
+
+    $("#portform_btnadd").click(function(){
+        $("#portfolio_id").val("");
+        $("#title").val("");
+        $("#description").val("");
+        $("#tags").val("");
+
+        $("#porto_form").modal('show');
+        event.preventDefault();
+    });
+
     $("#portform_btnsave").click(function(){
         $.post(  
             "{{ url_for('portfolio_add_update') }}",  
