@@ -21,7 +21,9 @@
 
                 </div>
                 <form class="navbar-form navbar-right" role="search">
+                    {% if session['signed'] %}
                     <button class="btn btn-default btn-sm btn-success" id="portform_btnadd">Add</button>
+                    {% endif %}
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Search">
                     </div>
@@ -42,7 +44,9 @@
               <div class="container">
                   <div class="row">
                       <div class="col-sm-5">
+{% if session['signed'] %}
                           <a href="javascript:editPortform('{{porto.id}}');"><span class="glyphicon glyphicon-edit"></span></a> <a href="javascript:deletePortfolio('{{porto.id}}');"><span class="glyphicon glyphicon-remove"></span></a>
+{% endif %}
                           <strong>
                               {{ porto.title }}
                           </strong>
@@ -95,7 +99,9 @@
 
                                 <div class="form-group">
                      {{ portoform.tags.label }}
-                    {{ portoform.tags(class="form-control", placeholder="What technology that you use? Separate it by comma")}}
+                                    <div>
+                    {{ portoform.tags(class="form-control", placeholder="What technology that you use? ", **{'data-role':'tags-input'})}}
+                                    </div>
                                     <p class="help-block" id="error_tags">{{ portoform.tags.errors[0] }}</p>
                                 </div>
                             </form>
@@ -115,10 +121,11 @@
 {% endblock %}
 
 {% block footer %}
+
+
 <script>
               
     $(document).ready(function(){
-       
     });
 
     function deletePortfolio(id)
@@ -151,7 +158,13 @@
             $("#title").val(data.title);
             $("#description").val(data.description);
             $("#tags").val(data.tags);
+            $("#tags").tagsinput(
+                {
+                    confirmKeys:[188]
+                }
+            );
 
+            
             $("#porto_form").modal('show');
         }).fail(function(data,textstatus,xhr){
             alert('fail = ' + data + ', textstatus ' + textstatus );    
@@ -165,9 +178,11 @@
         $("#title").val("");
         $("#description").val("");
         $("#tags").val("");
-
-        $("#porto_form").modal('show');
+        $("#tags").tagsinput(
+        );
         event.preventDefault();
+        $("#porto_form").modal('show');
+
     });
 
     $("#portform_btnsave").click(function(){
