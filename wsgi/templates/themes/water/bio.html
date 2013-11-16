@@ -122,11 +122,14 @@
             "/portfolio_get/" + id,  
             {}
         ).done(function(data){
-            console.log('here?');
-            alert(data);    
+            $("#portfolio_id").val(data.id);
+            $("#title").val(data.title);
+            $("#description").val(data.description);
+            $("#tags").val(data.tags);
+
             $("#porto_form").modal('show');
         }).fail(function(data,textstatus,xhr){
-            alert('fail = ' + data + ' header ' + xhr.getAllResponseHeaders());    
+            alert('fail = ' + data + ', textstatus ' + textstatus );    
         })
         ;
 
@@ -139,6 +142,7 @@
                 console.log(data)
                 var errors = $.parseJSON(data);
     
+
                 $("#error_title").text("");
                 $("#error_description").text("");
                 $("#error_tags").text("");

@@ -55,16 +55,6 @@ class Users(db.Model, object):
     
     portfolio = db.relationship('Portfolio')
 
-    def __init__(self, username = None, password = None, email = None, firstname = None, lastname = None, tagline = None, bio = None, avatar = None, active = None):
-        self.username = username
-        self.email = email
-        self.firstname = firstname
-        self.lastname = lastname
-        self.password = password
-        self.tagline = tagline
-        self.bio = bio
-        self.avatar = avatar
-        self.active = active
 
     def is_authenticated(self):
         return True
@@ -91,10 +81,11 @@ class Portfolio(db.Model):
     tags = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self, title = None, description = None, tags = None):
-        self.title = title
-        self.description = description
-        self.tags = tags
+    def _asdict(self):
+        result = OrderedDict()
+        for key in self.__mapper__.c.keys():
+            result[key] = getattr(self, key)
+        return result
 
 
 class SignupForm(Form):
@@ -272,8 +263,8 @@ def portfolio_add_update():
 
 @application.route('/portfolio_get/<id>')
 def portfolio_get(id):
-    user = Users.query.get(id)    
-    return serializer.dumps(user)
+    portfolio = Portfolio.query.get(id)
+    return json.dumps(portfolio._asdict())
 
 
 def dbinit():
