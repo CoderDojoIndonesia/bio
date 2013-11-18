@@ -432,9 +432,9 @@
       } else {
         // Invoke function on existing tags input
           var retVal;
-          if(arg2!=undefined)
+//          if(arg2!=undefined)
               retVal = tagsinput[arg1](arg2);
-          else retVal = tagsinput[arg1];
+//          else retVal = tagsinput[arg1];
         if (retVal !== undefined)
           results.push(retVal);
       }

@@ -163,6 +163,7 @@
                     confirmKeys:[188]
                 }
             );
+            $("#tags").val(data.tags);
 
             
             $("#porto_form").modal('show');
@@ -178,8 +179,8 @@
         $("#title").val("");
         $("#description").val("");
         $("#tags").val("");
-        $("#tags").tagsinput(
-        );
+        $("#tags").tagsinput();        
+        $("#tags").val("");
         event.preventDefault();
         $("#porto_form").modal('show');
 
