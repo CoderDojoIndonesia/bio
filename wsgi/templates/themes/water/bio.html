@@ -1,6 +1,14 @@
 {% extends "base-layout.html" %}
 {% block content %}
 
+<style type="text/css">
+    body.modal-open,
+    .modal-open .navbar-fixed-top
+    {
+        
+        margin-right:0px;
+    }
+</style>
 <div class="page-header">
     <h1>{{ user.firstname }} {{ user.lastname }}</h1>
     <p><strong>{{ user.tagline }}</strong></p>
@@ -22,7 +30,7 @@
                 </div>
                 <form class="navbar-form navbar-right" role="search">
                     {% if session['signed'] %}
-                    <button class="btn btn-default btn-sm btn-success" id="portform_btnadd">Add</button>
+                    <button class="btn btn-default btn-sm btn-success" data-toggle="modal" data-target="porto_form" id="portform_btnadd">Add</button>
                     {% endif %}
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Search">
@@ -69,7 +77,7 @@
     </div>
 </div><!-- /row -->
 
-<div class="modal fade" id="porto_form">
+<div class="modal fade" id="porto_form" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -100,7 +108,7 @@
                                 <div class="form-group">
                      {{ portoform.tags.label }}
                                     <div>
-                    {{ portoform.tags(class="form-control", placeholder="What technology that you use? ", **{'data-role':'tags-input'})}}
+                    {{ portoform.tags(class="form-control", placeholder="What technology that you use? ", **{'data-role':'tagsinput'})}}
                                     </div>
                                     <p class="help-block" id="error_tags">{{ portoform.tags.errors[0] }}</p>
                                 </div>
@@ -120,12 +128,14 @@
 
 {% endblock %}
 
+
 {% block footer %}
 
 
 <script>
               
     $(document).ready(function(){
+
     });
 
     function deletePortfolio(id)
@@ -136,8 +146,7 @@
                  $.getJSON(  
                     "/portfolio_delete/" + id,  
                     {}
-                ).done(function(data){
-                    alert(data.result);
+                ).done(function(data){       
                     location.reload();
                 }).fail(function(data,textstatus,xhr){
                     alert('fail = ' + data + ', textstatus ' + textstatus );    
@@ -157,15 +166,8 @@
             $("#portfolio_id").val(data.id);
             $("#title").val(data.title);
             $("#description").val(data.description);
-            $("#tags").val(data.tags);
-            $("#tags").tagsinput(
-                {
-                    confirmKeys:[188]
-                }
-            );
-            $("#tags").val(data.tags);
-
-            
+            $("#tags").tagsinput("removeAll");
+            $("#tags").tagsinput("add", data.tags);
             $("#porto_form").modal('show');
         }).fail(function(data,textstatus,xhr){
             alert('fail = ' + data + ', textstatus ' + textstatus );    
@@ -178,12 +180,9 @@
         $("#portfolio_id").val("");
         $("#title").val("");
         $("#description").val("");
-        $("#tags").val("");
-        $("#tags").tagsinput();        
-        $("#tags").val("");
-        event.preventDefault();
+        $("#tags").tagsinput("removeAll");
         $("#porto_form").modal('show');
-
+        return false;
     });
 
     $("#portform_btnsave").click(function(){

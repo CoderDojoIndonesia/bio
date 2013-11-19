@@ -13,7 +13,7 @@
     },
     freeInput: true,
     maxTags: undefined,
-    confirmKeys: [13],
+    confirmKeys: [188],
     onTagExists: function(item, $tag) {
       $tag.hide().fadeIn();
     }
@@ -434,7 +434,7 @@
           var retVal;
 //          if(arg2!=undefined)
               retVal = tagsinput[arg1](arg2);
-//          else retVal = tagsinput[arg1];
+ //         else retVal = tagsinput[arg1];
         if (retVal !== undefined)
           results.push(retVal);
       }
