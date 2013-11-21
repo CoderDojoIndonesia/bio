@@ -11,6 +11,7 @@ setup(name='Bio',
         'Flask==0.10.1',
         'Flask-SQLAlchemy==1.0',
         'Flask-Login==0.2.7',
-        'Flask-WTF==0.9.2'
+        'Flask-WTF==0.9.2',
+        'alembic'
       ],
      )
