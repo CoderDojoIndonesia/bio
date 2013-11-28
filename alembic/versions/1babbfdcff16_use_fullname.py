@@ -28,8 +28,13 @@ def upgrade():
     
 
 
-def downgrade():
-    
+def downgrade():    
     connection = op.get_bind()
+    op.add_column('users', sa.Column('firstname', sa.String(101)))
+    op.add_column('users', sa.Column('lastname', sa.String(101)))
+    print "Simply save fullname into firstname"
+
+    connection.execute("update users set firstname = fullname");
     
+    print "Dropping fullname column"
     op.drop_column('users', 'fullname')

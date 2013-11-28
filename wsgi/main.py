@@ -286,6 +286,7 @@ def portfolio_delete(id):
 
 
 def dbinit():
+    print "Dropping database"
     db.drop_all()
     db.create_all()
     user = Users(username='ekowibowo', firstname='Eko', 
