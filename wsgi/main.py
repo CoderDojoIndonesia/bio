@@ -45,6 +45,7 @@ class Users(db.Model, object):
     lastname = db.Column(db.String(20))    
     password = db.Column(db.String)
     email = db.Column(db.String(100), unique=True)
+    currently_live_in = db.Column(db.String(300))
 
     time_registered = db.Column(db.DateTime)
     tagline = db.Column(db.String(255))
