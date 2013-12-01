@@ -1,2 +1,2 @@
 echo "Preparing alembic upgrade..."
-pwd
+alembic upgrade head
