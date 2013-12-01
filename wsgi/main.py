@@ -135,14 +135,13 @@ def index(username = None):
     if user is None:
         user = Users()
         user.username = username
-        user.firstname = 'Batman, is that you?'
-        user.lastname = ''
+        user.fullname = 'Batman, is that you?'
         user.tagline = 'Tagline of how special you are'
         user.bio = 'Explain to the rest of the world, why you are the very most unique person to look at'
         user.avatar = '/static/batman.jpeg'
         return render_template('themes/water/bio.html', page_title = 'Claim this name : ' + username, user = user, signin_form = SigninForm(), portoform = PortoForm())
     else:
-        return render_template('themes/water/bio.html', page_title = user.firstname + ' ' + user.lastname, user = user, signin_form = SigninForm(), portoform = PortoForm())
+        return render_template('themes/water/bio.html', page_title = user.fullname, user = user, signin_form = SigninForm(), portoform = PortoForm())
 
 @application.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -168,8 +167,7 @@ def signup():
                                        page_title = 'Signup to Bio Application')
             
             else:
-                user.firstname = "Firstname"
-                user.lastname = "Lastname"
+                user.firstname = "Your fullname"
                 user.password = hash_string(user.password)
                 user.tagline = "Tagline of how special you are"
                 user.bio = "Explain to the rest of the world why you are the very most unique person to have a look at"
@@ -287,8 +285,8 @@ def portfolio_delete(id):
 
 def dbinit():
     db.create_all()
-    user = Users(username='ekowibowo', firstname='Eko', 
-                         lastname='Suprapto Wibowo', password=hash_string('rahasia'),
+'''
+    user = Users(username='ekowibowo', fullname='Eko Suprapto Wibowo', password=hash_string('rahasia'),
                          email='swdev.bali@gmail.com', 
                          tagline='A cool coder and an even cooler Capoeirista', 
                          bio = 'I love Python very much!', 
@@ -305,6 +303,7 @@ def dbinit():
                                     tags='extjs,python,openshift,flask,sqlalchemy,postgresql,bootstrap3'))
     db.session.add(user)
     db.session.commit()
+'''
 
 if __name__ == '__main__':
     dbinit()
