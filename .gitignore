@@ -1,4 +1,5 @@
 env/
+alembic.ini
 *.py[cod]
 
 # C extensions
@@ -35,4 +36,3 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
-alembic.ini
