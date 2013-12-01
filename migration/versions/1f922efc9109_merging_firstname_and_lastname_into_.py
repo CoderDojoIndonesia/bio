@@ -15,8 +15,26 @@ import sqlalchemy as sa
 
 
 def upgrade():
-    pass
+    print "Adding fullname column"
+    op.add_column('users', sa.Column('fullname', sa.String(101)))
+    
+    print "Merging firstname + lastname into fullname"
+    connection = op.get_bind()
+    connection.execute("update users set fullname = subquery.newfullname from (select id,concat(firstname, ' ', lastname) as newfullname from users) as subquery where users.id = subquery.id", execution_options = None)
+
+    print "Dropping firstname and lastname collumn"
+    op.drop_column('users', 'firstname')
+    op.drop_column('users', 'lastname')
+    
 
 
-def downgrade():
-    pass
+def downgrade():    
+    connection = op.get_bind()
+    op.add_column('users', sa.Column('firstname', sa.String(101)))
+    op.add_column('users', sa.Column('lastname', sa.String(101)))
+    print "Simply save fullname into firstname"
+
+    connection.execute("update users set firstname = fullname");
+    
+    print "Dropping fullname column"
+    op.drop_column('users', 'fullname')
