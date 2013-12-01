@@ -41,8 +41,7 @@ def hash_string(string):
 class Users(db.Model, object):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(60), unique=True)
-    firstname = db.Column(db.String(20))
-    lastname = db.Column(db.String(20))    
+    fullname = db.Column(db.String(101))
     password = db.Column(db.String)
     email = db.Column(db.String(100), unique=True)
     currently_live_in = db.Column(db.String(300))
